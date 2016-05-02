@@ -40,6 +40,8 @@ public class YellowDustService {
 	public static ArrayList<String> DDDs;
 	protected static HashMap<Integer, Integer> steps;
 
+	private static int loading_ddd_index = -1;
+	
 	static {
 		mDDDLabels = new HashMap<String, String>();
 		mDDDLabels.put("02", "서울");
@@ -61,21 +63,21 @@ public class YellowDustService {
 
 		DDDs = new ArrayList<String>();
 		DDDs.add("02");
-//		DDDs.add("051");
-//		DDDs.add("053");
-//		DDDs.add("032");
-//		DDDs.add("062");
-//		DDDs.add("042");
-//		DDDs.add("052");
-//		DDDs.add("031");
-//		DDDs.add("033");
-//		DDDs.add("043");
-//		DDDs.add("041");
-//		DDDs.add("063");
-//		DDDs.add("061");
-//		DDDs.add("054");
-//		DDDs.add("055");
-//		DDDs.add("064");
+		DDDs.add("051");
+		DDDs.add("053");
+		DDDs.add("032");
+		DDDs.add("062");
+		DDDs.add("042");
+		DDDs.add("052");
+		DDDs.add("031");
+		DDDs.add("033");
+		DDDs.add("043");
+		DDDs.add("041");
+		DDDs.add("063");
+		DDDs.add("061");
+		DDDs.add("054");
+		DDDs.add("055");
+		DDDs.add("064");
 
 		steps = new HashMap<Integer, Integer>();
 		steps.put(0, 0);
@@ -120,11 +122,9 @@ public class YellowDustService {
 		return null;
 	}
 
-	public HashMap<String, ArrayList<YellowDust>> loadData() {
+	public void loadData() {
 		
 		ArrayList<YellowDust> dusts = (ArrayList<YellowDust>)yellowDustRepository.findAll();
-		
-		mAirs = new HashMap<String, ArrayList<YellowDust>>();
 
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(new Date());
@@ -137,68 +137,68 @@ public class YellowDustService {
 		
 		String searchDate = new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(now);
 		String searchDate_f = new SimpleDateFormat("yyyyMM", Locale.US).format(now);
-		for (String district : DDDs) {
-			Document doc = null;
-			try {
-				String url = "http://www.airkorea.or.kr/pmRelaySub?strDateDiv=1&searchDate=" + searchDate + "&district="
-						+ district + "&itemCode=10007&searchDate_f=" + searchDate_f;
-				logger.info("url " + url);
-				doc = Jsoup.parse(executeRequest(url));
-				// doc =
-				// Jsoup.connect("http://www.airkorea.or.kr/pmRelaySub?strDateDiv=1&searchDate="
-				// + searchDate + "&district=" + district +
-				// "&itemCode=10007&searchDate_f=" + searchDate_f).get();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			if (doc == null)
-				continue;
-			Elements elements = doc.select("tbody > tr");
-			logger.info("DDD " + district + " elements length " + elements.size());
-			if (elements == null || elements.size() == 0) {
-				continue;
-			}
-			
-			ArrayList<YellowDust> airs = new ArrayList<YellowDust>();
-			mAirs.put(district, airs);
+		
+		
+		++loading_ddd_index;
+		if (loading_ddd_index >= DDDs.size()) {
+			loading_ddd_index = 0;
+		}
+		String district = DDDs.get(loading_ddd_index);
+		
+		Document doc = null;
+		try {
+			String url = "http://www.airkorea.or.kr/pmRelaySub?strDateDiv=1&searchDate=" + searchDate + "&district="
+					+ district + "&itemCode=10007&searchDate_f=" + searchDate_f;
+			logger.info("url " + url);
+			doc = Jsoup.parse(executeRequest(url));
+			// doc =
+			// Jsoup.connect("http://www.airkorea.or.kr/pmRelaySub?strDateDiv=1&searchDate="
+			// + searchDate + "&district=" + district +
+			// "&itemCode=10007&searchDate_f=" + searchDate_f).get();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if (doc == null) {
+			logger.error("airkorea page not loaded");
+			return;
+		}
+		
+		Elements elements = doc.select("tbody > tr");
+		if (elements == null || elements.size() == 0) {
+			logger.error("airkorea page loaded but scheme changed");
+			return;
+		}
+		logger.info("DDD " + district + " elements length " + elements.size());
+		
+		ArrayList<YellowDust> airs = new ArrayList<YellowDust>();
+		mAirs.put(district, airs);
 
-			for (Element el : elements) {
-				Elements children = el.children();
-				if (children == null || children.size() < 26) {
-					continue;
-				}
-				String group = children.get(1).text();
-				int data = 0;
-				Element child = null;
-				for (int i = children.size() - 1; i > 1; i--) {
-					child = children.get(i);
-					if (!child.equals("-")) {
-						try {
-							data = Integer.parseInt(child.text());
-						} catch (Exception e) {
-						}
-						if (data != 0)
-							break;
+		for (Element el : elements) {
+			Elements children = el.children();
+			if (children == null || children.size() < 26) {
+				continue;
+			}
+			String group = children.get(1).text();
+			int data = 0;
+			Element child = null;
+			for (int i = children.size() - 1; i > 1; i--) {
+				child = children.get(i);
+				if (!child.equals("-")) {
+					try {
+						data = Integer.parseInt(child.text());
+					} catch (Exception e) {
 					}
+					if (data != 0)
+						break;
 				}
-				YellowDust air = new YellowDust();
-				air.code = group;
-				air.label = group;
-				air.density = data;
-				air.ddd = district;
-
-				airs.add(air);
-				
-				YellowDust yodust = findYellowDustByLabel(dusts, group);
-				if (yodust != null) {
-					yodust.density = data;
-				}
-
-				// System.out.println("air " + air);
 			}
 
+			YellowDust yodust = findYellowDustByLabel(dusts, group);
+			if (yodust != null) {
+				yodust.density = data;
+			}
 		}
 		
 		
@@ -591,7 +591,7 @@ public class YellowDustService {
 		long count = yellowDustRepository.count();
 		logger.info(String.format("yellowdust repository count ? %d", count));
 
-		return mAirs;
+		return;
 	}
 	
 	private ArrayList<YellowDust> setGeocode(ArrayList<YellowDust> dusts) {

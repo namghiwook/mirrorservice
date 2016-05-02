@@ -17,8 +17,8 @@ public class ScheduledTasks {
 		
 		System.out.println("tick");
 		
-//		if (yellowDustService != null) {
-//			yellowDustService.loadData();
-//		}
+		if (yellowDustService != null) {
+			yellowDustService.loadData();
+		}
 	}
 }
