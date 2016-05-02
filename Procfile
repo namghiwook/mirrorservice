@@ -1,1 +1,1 @@
-web: java $JAVA_OPTS -jar target/*.jar  
+web: java -Dserver.port=$PORT -jar bulid/libs/mirror-0.0.1-SNAPSHOT.jar
