@@ -14,14 +14,10 @@ public class ApplicationStartup {
 
 	private Logger logger = Logger.getLogger(getClass());
 
-	@Autowired
-	private YellowDustService yellowDustService;
-	
 	@EventListener
     public void handleContextRefresh(ContextRefreshedEvent event) {
 		logger.info("handleContextRefresh called!");
 		
-		yellowDustService.loadData();
     }
 	
 }
