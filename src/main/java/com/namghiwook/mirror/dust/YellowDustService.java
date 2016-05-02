@@ -60,7 +60,7 @@ public class YellowDustService {
 		mDDDLabels.put("064", "제주");
 
 		DDDs = new ArrayList<String>();
-//		DDDs.add("02");
+		DDDs.add("02");
 //		DDDs.add("051");
 //		DDDs.add("053");
 //		DDDs.add("032");
@@ -111,10 +111,19 @@ public class YellowDustService {
 		}
 		return null;
 	}
-
-	ArrayList<YellowDust> dusts = new ArrayList<YellowDust>();
 	
+	private YellowDust findYellowDustByLabel(ArrayList<YellowDust> dusts, String label) {
+		if (dusts == null) return null;
+		for (YellowDust dust : dusts) {
+			if (dust.label.equals(label)) return dust;
+		}
+		return null;
+	}
+
 	public HashMap<String, ArrayList<YellowDust>> loadData() {
+		
+		ArrayList<YellowDust> dusts = (ArrayList<YellowDust>)yellowDustRepository.findAll();
+		
 		mAirs = new HashMap<String, ArrayList<YellowDust>>();
 
 		Calendar cal = Calendar.getInstance();
@@ -182,12 +191,20 @@ public class YellowDustService {
 
 				airs.add(air);
 				
-				dusts.add(air);
+				YellowDust yodust = findYellowDustByLabel(dusts, group);
+				if (yodust != null) {
+					yodust.density = data;
+				}
 
 				// System.out.println("air " + air);
 			}
 
 		}
+		
+		
+		
+		saveDusts(dusts);
+		
 		
 //		ArrayList<String> groups = new ArrayList<String>();
 		
@@ -591,10 +608,6 @@ public class YellowDustService {
 	}
 	
 	private ArrayList<YellowDust> saveDusts(ArrayList<YellowDust> dusts) {
-//		yellowDustRepository.deleteAll();
-		
-		
-		
 		return (ArrayList<YellowDust>) yellowDustRepository.save(dusts);
 	}
 
