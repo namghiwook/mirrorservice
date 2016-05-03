@@ -116,15 +116,15 @@ public class YellowDustService {
 			String json = "{'density':" + dust.density + "}";
 			String url = "https://dweet.io:443/dweet/for/yellowdust-" + dust.code;
 			
-			logger.info("to dtweet url " + dust.code + " " + url);
+//			logger.info("to dtweet url " + dust.code + " " + url);
 			
-//			RequestBody body = RequestBody.create(JSON, json);
-//			Request request = new Request.Builder().url(url).post(body).build();
-//			try {
-//				Response response = client.newCall(request).execute();
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
+			RequestBody body = RequestBody.create(JSON, json);
+			Request request = new Request.Builder().url(url).post(body).build();
+			try {
+				client.newCall(request).execute();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		
 	}
