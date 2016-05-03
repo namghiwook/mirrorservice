@@ -99,7 +99,7 @@ public class YellowDustService {
 	private YellowDustRepository yellowDustRepository;
 	
 	public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-	OkHttpClient client = new OkHttpClient();
+	
 	
 	private YellowDust findYellowDustByLabel(ArrayList<YellowDust> dusts, String label) {
 		if (dusts == null) return null;
@@ -111,6 +111,8 @@ public class YellowDustService {
 	
 	private void saveToDtweet(ArrayList<YellowDust> dusts) {
 		if (dusts == null) return;
+		
+		OkHttpClient client = new OkHttpClient();
 		
 		for (YellowDust dust : dusts) {
 			String json = "{'density':" + dust.density + "}";
