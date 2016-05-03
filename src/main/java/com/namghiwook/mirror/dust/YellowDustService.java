@@ -27,6 +27,11 @@ import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.stereotype.Service;
 
 import com.namghiwook.mirror.GeocodeService;
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
 
 @Configurable
 @Service
@@ -93,12 +98,32 @@ public class YellowDustService {
 	@Autowired
 	private YellowDustRepository yellowDustRepository;
 	
+	public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+	OkHttpClient client = new OkHttpClient();
+	
 	private YellowDust findYellowDustByLabel(ArrayList<YellowDust> dusts, String label) {
 		if (dusts == null) return null;
 		for (YellowDust dust : dusts) {
 			if (dust.label.equals(label)) return dust;
 		}
 		return null;
+	}
+	
+	private void saveToDtweet(ArrayList<YellowDust> dusts) {
+		if (dusts == null) return;
+		
+		for (YellowDust dust : dusts) {
+			String json = "{'density':" + dust.density + "}";
+			String url = "https://dweet.io:443/dweet/for/yellowdust-" + dust.code;
+			RequestBody body = RequestBody.create(JSON, json);
+			Request request = new Request.Builder().url(url).post(body).build();
+			try {
+				Response response = client.newCall(request).execute();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
 	}
 
 	public void loadData() {
@@ -177,14 +202,13 @@ public class YellowDustService {
 			if (yodust != null) {
 				yodust.density = data;
 				yodust.lastUpdated = now;
-				yodust.code = String.format("%s-%03d", district, n); // => "001"
+//				yodust.code = String.format("%s-%03d", district, n); // => "001"
 			}
 		}
 		
-		
-		
 		saveDusts(dusts);
 		
+		saveToDtweet(dusts);
 		
 //		ArrayList<String> groups = new ArrayList<String>();
 		
