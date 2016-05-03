@@ -129,6 +129,17 @@ public class YellowDustService {
 		}
 		
 	}
+	
+	private void getHello() {
+		OkHttpClient client = new OkHttpClient();
+		Request request = new Request.Builder().url("https://peaceful-bastion-63845.herokuapp.com/hello").build();
+		try {
+			client.newCall(request).execute();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	public void loadData() {
 		
@@ -213,6 +224,8 @@ public class YellowDustService {
 		saveDusts(dusts);
 		
 		saveToDtweet(dusts);
+		
+		getHello();
 		
 //		ArrayList<String> groups = new ArrayList<String>();
 		

@@ -32,9 +32,9 @@ public class HelloController {
 	@RequestMapping(value = "/hello", method = RequestMethod.GET)
 	public @ResponseBody String hello() {
 		
-		yellowDustService.loadData();
+//		yellowDustService.loadData();
 		
-		return "yellowdust data loaded";
+		return "hello";
 		
 //		return testGeocode();
 		
