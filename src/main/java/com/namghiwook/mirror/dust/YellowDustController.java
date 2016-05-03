@@ -16,9 +16,9 @@ public class YellowDustController {
 	@RequestMapping(value = "/dust", method = RequestMethod.GET)
 	public YellowDust getYellowDustByDDDCode(@RequestParam("ddd") String ddd, @RequestParam("code") String code) {
 		YellowDust yellowDust = null;
-		if (!StringUtils.isEmpty(ddd) && !StringUtils.isEmpty(code)) {
-			yellowDust = yellowDustService.getYellowDust(ddd, code); 
-		}
+//		if (!StringUtils.isEmpty(ddd) && !StringUtils.isEmpty(code)) {
+//			yellowDust = yellowDustService.getYellowDust(ddd, code); 
+//		}
 		if (yellowDust == null) yellowDust = new YellowDust();
 		return yellowDust;
 	}

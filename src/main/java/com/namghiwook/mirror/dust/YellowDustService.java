@@ -35,7 +35,6 @@ public class YellowDustService {
 	Logger logger = Logger.getLogger(getClass());
 
 	// ddd, airs
-	protected static HashMap<String, ArrayList<YellowDust>> mAirs;
 	public static HashMap<String, String> mDDDLabels;
 	public static ArrayList<String> DDDs;
 	protected static HashMap<Integer, Integer> steps;
@@ -93,26 +92,6 @@ public class YellowDustService {
 	private GeocodeService geocodeService;
 	@Autowired
 	private YellowDustRepository yellowDustRepository;
-
-	public HashMap<String, ArrayList<YellowDust>> getYellowDust() {
-		return mAirs;
-	}
-	
-	public ArrayList<YellowDust> getYellowDust(String ddd) {
-		if (mAirs == null) return null;
-		return mAirs.get(ddd);
-	}
-
-	public YellowDust getYellowDust(String ddd, String code) {
-		if (mAirs == null) return null;
-		ArrayList<YellowDust> dddairs = mAirs.get(ddd);
-		if (dddairs == null) return null;
-		for (YellowDust air : dddairs) {
-			if (air.code.equals(code))
-				return air;
-		}
-		return null;
-	}
 	
 	private YellowDust findYellowDustByLabel(ArrayList<YellowDust> dusts, String label) {
 		if (dusts == null) return null;
@@ -172,9 +151,6 @@ public class YellowDustService {
 		}
 		logger.info("DDD " + district + " elements length " + elements.size());
 		
-		ArrayList<YellowDust> airs = new ArrayList<YellowDust>();
-		mAirs.put(district, airs);
-
 		for (Element el : elements) {
 			Elements children = el.children();
 			if (children == null || children.size() < 26) {
