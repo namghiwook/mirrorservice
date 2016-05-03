@@ -122,7 +122,7 @@ public class YellowDustService {
 			Request request = new Request.Builder().url(url).post(body).build();
 			try {
 				Response response = client.newCall(request).execute();
-				logger.info(String.format("%s %s", dust.code, response.body().string()));
+//				logger.info(String.format("%s %s", dust.code, response.body().string()));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
