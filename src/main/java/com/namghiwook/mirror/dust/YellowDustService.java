@@ -121,7 +121,8 @@ public class YellowDustService {
 			RequestBody body = RequestBody.create(JSON, json);
 			Request request = new Request.Builder().url(url).post(body).build();
 			try {
-				client.newCall(request).execute();
+				Response response = client.newCall(request).execute();
+				logger.info(String.format("%s %s", dust.code, response.body().string()));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
