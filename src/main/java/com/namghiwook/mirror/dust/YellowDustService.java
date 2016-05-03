@@ -115,7 +115,7 @@ public class YellowDustService {
 		OkHttpClient client = new OkHttpClient();
 		
 		for (YellowDust dust : dusts) {
-			String json = "{'density':" + dust.density + "}";
+			String json = "{\"density\":" + dust.density + "}";
 			String url = "https://dweet.io:443/dweet/for/yellowdust-" + dust.code;
 
 			RequestBody body = RequestBody.create(JSON, json);
