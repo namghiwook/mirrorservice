@@ -1,5 +1,7 @@
 package com.namghiwook.mirror.dust;
 
+import java.util.Date;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 
@@ -16,6 +18,7 @@ public class YellowDust {
 	public String code;
 	public String label;
 	public int density;
+	public Date lastUpdated;
 	
 	public GeoJsonPoint location;
 	

@@ -174,6 +174,7 @@ public class YellowDustService {
 			YellowDust yodust = findYellowDustByLabel(dusts, group);
 			if (yodust != null) {
 				yodust.density = data;
+				yodust.lastUpdated = now;
 			}
 		}
 		
