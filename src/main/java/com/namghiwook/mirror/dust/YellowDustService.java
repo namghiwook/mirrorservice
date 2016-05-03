@@ -151,7 +151,9 @@ public class YellowDustService {
 		}
 		logger.info("DDD " + district + " elements length " + elements.size());
 		
+		int n = 0;
 		for (Element el : elements) {
+			++n;
 			Elements children = el.children();
 			if (children == null || children.size() < 26) {
 				continue;
@@ -175,6 +177,7 @@ public class YellowDustService {
 			if (yodust != null) {
 				yodust.density = data;
 				yodust.lastUpdated = now;
+				yodust.code = String.format("%s-%03d", district, n); // => "001"
 			}
 		}
 		
