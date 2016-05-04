@@ -1,26 +1,46 @@
 package com.namghiwook.mirror.dust;
 
-import org.elasticsearch.common.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.io.IOException;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
 @RestController 
 public class YellowDustController {
-
-	@Autowired
-	private YellowDustService yellowDustService;
+	
+	OkHttpClient client = new OkHttpClient();
+	ObjectMapper mapper = new ObjectMapper();
 	
 	@RequestMapping(value = "/dust", method = RequestMethod.GET)
-	public YellowDust getYellowDustByDDDCode(@RequestParam("ddd") String ddd, @RequestParam("code") String code) {
-		YellowDust yellowDust = null;
-//		if (!StringUtils.isEmpty(ddd) && !StringUtils.isEmpty(code)) {
-//			yellowDust = yellowDustService.getYellowDust(ddd, code); 
-//		}
-		if (yellowDust == null) yellowDust = new YellowDust();
-		return yellowDust;
+	public String getYellowDustByDDDCode(@RequestParam("code") String code) {
+
+		String density = "0";
+		
+		// http://dweet.io/get/latest/dweet/for/yellowdust-031-040
+		Request request = new Request.Builder().url("http://dweet.io/get/latest/dweet/for/yellowdust-" + code).build();
+		try {
+			Response response = client.newCall(request).execute();
+			if (response.code() == 200) {
+				// {"this":"succeeded","by":"getting","the":"dweets","with":[{"thing":"yellowdust-031-040","created":"2016-05-04T05:15:52.993Z","content":{"density":74}}]}
+				// with/content/density
+				JsonNode root = mapper.readTree(response.body().string());
+				if (root.has("this") && root.path("this").asText().equals("succeeded")) {
+					density = root.path("with").path("content").path("density").asText();
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return density;
 	}
 	
 }
