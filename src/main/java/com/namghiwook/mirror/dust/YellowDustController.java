@@ -25,7 +25,7 @@ public class YellowDustController {
 	@RequestMapping(value = "/dust", method = RequestMethod.GET)
 	public String getYellowDustByCode(@RequestParam("code") String code) {
 
-		String density = "0";
+		int density = 0;
 		
 		// http://dweet.io/get/latest/dweet/for/yellowdust-031-040
 		Request request = new Request.Builder().url("http://dweet.io/get/latest/dweet/for/yellowdust-" + code).build();
@@ -36,7 +36,7 @@ public class YellowDustController {
 				// with/content/density
 				JsonNode root = mapper.readTree(response.body().string());
 				if (root.has("this") && root.path("this").asText().equals("succeeded")) {
-					density = root.path("with").path("content").path("density").asText();
+					density = root.path("with").path("content").path("density").asInt(0);
 				}
 			}
 		} catch (IOException e) {
@@ -45,7 +45,7 @@ public class YellowDustController {
 		
 		logger.info(String.format("getYellowDustByCode code %s : %s", code, density));
 		
-		return density;
+		return String.valueOf(density);
 	}
 	
 }
