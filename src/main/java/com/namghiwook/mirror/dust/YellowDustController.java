@@ -37,13 +37,20 @@ public class YellowDustController {
 				String json = response.body().string();
 				logger.info(String.format("getYellowDustByCode json : %s", json));
 				JsonNode root = mapper.readTree(json);
-				JsonNode densityNode = root.path("with").path("content").path("density");
-				if (densityNode.isMissingNode()) { // true if no such path exists
-					logger.error("density node missing");
-				} else {
-					density = densityNode.intValue();
-					logger.info(String.format("getYellowDustByCode code %s density : %d", code, density));
-				}
+				JsonNode withNode = root.path("with");
+				logger.error("withNode missing ? " + withNode.isMissingNode());
+				JsonNode contentNode = withNode.path("content");
+				logger.error("contentNode missing ? " + contentNode.isMissingNode());
+				JsonNode densityNode = contentNode.path("density");
+				logger.error("densityNode missing ? " + densityNode.isMissingNode());
+				
+//				JsonNode densityNode = root.path("with").path("content").path("density");
+//				if (densityNode.isMissingNode()) { // true if no such path exists
+//					logger.error("density node missing");
+//				} else {
+//					density = densityNode.intValue();
+//					logger.info(String.format("getYellowDustByCode code %s density : %d", code, density));
+//				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
