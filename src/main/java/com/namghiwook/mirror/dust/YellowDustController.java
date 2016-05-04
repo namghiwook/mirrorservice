@@ -34,10 +34,10 @@ public class YellowDustController {
 			if (response.code() == 200) {
 				// {"this":"succeeded","by":"getting","the":"dweets","with":[{"thing":"yellowdust-031-040","created":"2016-05-04T05:15:52.993Z","content":{"density":74}}]}
 				// with/content/density
-				JsonNode root = mapper.readTree(response.body().string());
-				if (root.has("this") && root.path("this").asText().equals("succeeded")) {
-					density = root.path("with").path("content").path("density").asInt(0);
-				}
+				String json = response.body().string();
+				logger.info(String.format("getYellowDustByCode json : %s", json));
+				JsonNode root = mapper.readTree(json);
+				density = root.path("with").path("content").path("density").asInt(0);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
