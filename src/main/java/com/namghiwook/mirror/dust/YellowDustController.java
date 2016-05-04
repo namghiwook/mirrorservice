@@ -37,13 +37,28 @@ public class YellowDustController {
 				String json = response.body().string();
 				logger.info(String.format("getYellowDustByCode json : %s", json));
 				JsonNode root = mapper.readTree(json);
-				JsonNode withNode = root.path("with");
-				logger.error("withNode missing ? " + withNode.isMissingNode());
-				JsonNode contentNode = withNode.path("content");
-				logger.error("contentNode missing ? " + contentNode.isMissingNode());
-				JsonNode densityNode = contentNode.path("density");
-				logger.error("densityNode missing ? " + densityNode.isMissingNode());
 				
+				boolean node_missing = false;
+				JsonNode withNode = root.get("with");
+				if (withNode != null && withNode.has("content")) {
+					JsonNode contentNode = withNode.get("content");
+					if (contentNode != null && contentNode.has("density")) {
+						JsonNode densityNode = contentNode.get("density");
+						if (densityNode != null) {
+							density = densityNode.asInt();
+						} else {
+							node_missing = true;
+						}
+					} else {
+						node_missing = true;
+					}
+				} else {
+					node_missing = true;
+				}
+
+				logger.info("node missing ? " + node_missing);
+				logger.info(String.format("getYellowDustByCode code %s density : %d", code, density));
+			
 //				JsonNode densityNode = root.path("with").path("content").path("density");
 //				if (densityNode.isMissingNode()) { // true if no such path exists
 //					logger.error("density node missing");
