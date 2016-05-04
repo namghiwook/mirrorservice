@@ -37,39 +37,21 @@ public class YellowDustController {
 				String json = response.body().string();
 				logger.info(String.format("getYellowDustByCode json : %s", json));
 				JsonNode root = mapper.readTree(json);
-				
-				boolean node_missing = false;
-				JsonNode withNode = root.get("with");
-				if (withNode != null && withNode.has("content")) {
-					JsonNode contentNode = withNode.get("content");
-					if (contentNode != null && contentNode.has("density")) {
-						JsonNode densityNode = contentNode.get("density");
-						if (densityNode != null) {
-							density = densityNode.asInt();
-						} else {
-							node_missing = true;
-						}
+				JsonNode thisNode = root.path("this");
+				if (!thisNode.isMissingNode() && thisNode.asText("failed").equals("succeeded")) {
+					JsonNode densityNode = root.path("with").get(0).path("content").path("density");
+					if (densityNode.isMissingNode()) { // true if no such path exists
+						logger.error("density node missing");
 					} else {
-						node_missing = true;
+						density = densityNode.intValue();
 					}
-				} else {
-					node_missing = true;
-				}
-
-				logger.info("node missing ? " + node_missing);
-				logger.info(String.format("getYellowDustByCode code %s density : %d", code, density));
-			
-//				JsonNode densityNode = root.path("with").path("content").path("density");
-//				if (densityNode.isMissingNode()) { // true if no such path exists
-//					logger.error("density node missing");
-//				} else {
-//					density = densityNode.intValue();
-//					logger.info(String.format("getYellowDustByCode code %s density : %d", code, density));
-//				}
+				} 
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		logger.info(String.format("getYellowDustByCode code %s density : %d", code, density));
 		
 		return String.valueOf(density);
 	}
